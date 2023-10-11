@@ -1,6 +1,8 @@
 package puller
 
 import (
+	"context"
+
 	"github.com/zelenin/go-tdlib/client"
 )
 
@@ -25,13 +27,16 @@ func supergroupMembers(tdlibClient *client.Client, chatMemberChan chan *client.C
 
 	var page int32 = 0
 
+	ctx := context.Background()
+
 	for {
-		chatMembers, err := tdlibClient.GetSupergroupMembers(&client.GetSupergroupMembersRequest{
+		req := &client.GetSupergroupMembersRequest{
 			SupergroupId: supergroupId,
 			Filter:       filter,
 			Offset:       page*limit + offset,
 			Limit:        limit,
-		})
+		}
+		chatMembers, err := tdlibClient.GetSupergroupMembers(ctx, req)
 		if err != nil {
 			errChan <- err
 

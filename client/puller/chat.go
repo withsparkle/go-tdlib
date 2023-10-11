@@ -1,6 +1,8 @@
 package puller
 
 import (
+	"context"
+
 	"github.com/zelenin/go-tdlib/client"
 )
 
@@ -23,14 +25,17 @@ func chatHistory(tdlibClient *client.Client, messageChan chan *client.Message, e
 		close(errChan)
 	}()
 
+	ctx := context.Background()
+
 	for {
-		messages, err := tdlibClient.GetChatHistory(&client.GetChatHistoryRequest{
+		req := &client.GetChatHistoryRequest{
 			ChatId:        chatId,
 			FromMessageId: fromMessageId,
 			Offset:        offset,
 			Limit:         limit,
 			OnlyLocal:     onlyLocal,
-		})
+		}
+		messages, err := tdlibClient.GetChatHistory(ctx, req)
 		if err != nil {
 			errChan <- err
 
